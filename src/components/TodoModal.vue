@@ -6,41 +6,48 @@
         size="lg"
         @hidden="resetModal"
     >
-        <div class="d-block mt-9">
+        <div class="d-block mt-9" data-cy="modal-create-edit">
             <div class="text-sm mb-1 text-[#111111]">NAMA LIST ITEM</div>
-            <b-form-input v-model="todo.title" placeholder="Tambahkan nama list item"></b-form-input>
+            <b-form-input v-model="todo.title" placeholder = "Tambahkan nama list item" data-cy="modal-create-edit-title"></b-form-input>
 
             <div class="mt-6">
                 <div class="text-sm mb-1 text-[#111111]">PRIORITY</div>
-                <b-dropdown id="dropdown-1"  variant="light" no-caret  class="m-md-2 w-[160px] flex justify-between">
+                <b-dropdown 
+                    id="dropdown-1"  
+                    variant="light" 
+                    no-caret  
+                    class="m-md-2 w-[160px] flex justify-between" 
+                    data-cy="modal-create-edit-btn-priority"
+                >
                     <template #button-content>
-                        <div class="flex justify-between items-center">
+                        <div class="flex justify-between items-center" data-cy="modal-create-edit-priority-content">
                             <i class="fa fa-circle" :class="getColor(selectedPriority.code)"></i>
-                            <span>{{selectedPriority.value}}</span>
+                            <span>{{ selectedPriority.value }}</span>
                             <i class="fa fa-chevron-down "></i>
                         </div>
                     </template>
                     <b-dropdown-item 
-                    v-for="priority in listPriority" 
-                    :key="priority.code"
-                    @click="selectedPriority=priority"
-                >
-                    <div class="flex items-center gap-2">
-                        <i class="fa fa-circle" :class="getColor(priority.code)"></i>
-                        <span>{{priority.value}}</span>
-                        <i v-show="priority===selectedPriority.value" class="fa fa-check ml-auto" ></i>
-                    </div>
-                </b-dropdown-item>
+                        v-for="priority in listPriority" 
+                        :key="priority.code"
+                        @click="selectedPriority=priority"
+                        data-cy="modal-create-edit-item-priority"
+                    >
+                        <div class="flex items-center gap-2">
+                            <i class="fa fa-circle" :class="getColor(priority.code)"></i>
+                            <span>{{ priority.value }}</span>
+                            <i v-show="priority === selectedPriority.value" class="fa fa-check ml-auto" ></i>
+                        </div>
+                    </b-dropdown-item>
                 </b-dropdown>
-                </div>
+            </div>
         </div>
         
         <template #modal-footer>
             <button 
                 @click.stop="hideModal" 
                 class="bg-[#16ABF8] w-[150px] py-2 text-white rounded-3xl flex justify-center items-center gap-2"
-                :class="todo.title.length<1 ? 'cursor-not-allowed opacity-60': ''"
-                :disabled="todo.title.length<1"
+                :class="todo.title.length < 1 ? 'cursor-not-allowed opacity-60': ''"
+                :disabled="todo.title.length < 1"
             >
                 <b-spinner v-if="loading" small></b-spinner>
                 <span>Simpan</span>
@@ -50,10 +57,10 @@
 </template>
 
 <script>
-import {mapActions} from "vuex";
+import { mapActions } from "vuex";
 export default {
     data() {
-        return{
+        return {
             isCreateOrEdit: 'create',
             todo: {
                 activity_group_id: null,
@@ -62,13 +69,13 @@ export default {
                 priority: "",
                 title: "",
             },
-            selectedPriority:{value: 'Very High', code:'very-high' },
-            listPriority:[
-                {value: 'Very High', code:'very-high' },
-                {value: 'High', code:'high' },
-                {value: 'Medium', code:'normal' },
-                {value: 'Low', code:'low' },
-                {value: 'Very Low', code:'very-low' },
+            selectedPriority: { value: 'Very High', code: 'very-high' },
+            listPriority: [
+                { value: 'Very High', code: 'very-high' },
+                { value: 'High', code: 'high' },
+                { value: 'Medium', code: 'normal' },
+                { value: 'Low', code: 'low' },
+                { value: 'Very Low', code: 'very-low' },
             ],
             loading: false,
         }
@@ -77,68 +84,66 @@ export default {
         ...mapActions({
             postTodo: 'postTodo',
             fetchActivity: 'fetchActivity',
-            updateTodo: 'updateTodo'
+            updateTodo: 'updateTodo',
         }),
         async hideModal() {
             if (this.loading) return;
             this.loading = true;
-            if(this.isCreateOrEdit === 'create') {
+            if (this.isCreateOrEdit === 'create') {
                 await this.postTodo({
                     "activity_group_id": this.$route.params.id,
                     "title": this.todo.title,
                     "priority" : this.selectedPriority.code,
                 });
-            } else{
+            } else {
                 await this.updateTodo({
                     id: this.todo.id,
                     data: {
                         title: this.todo.title,
                         priority:  this.selectedPriority.code,
-                    }
-                })
+                    },
+                });
             }
             this.loading = false;
             this.fetchActivity(this.$route.params.id);
-            this.$root.$emit('bv::hide::modal', 'modal-todo')
+            this.$root.$emit('bv::hide::modal', 'modal-todo');
         },
         getColor(priority) {
-            if(priority === 'very-high'){
-                return 'text-[#ED4C5C]'
-            }else if(priority === 'high'){
-                return 'text-[#F8A541]'
-            }else if(priority === 'normal'){
-                return 'text-[#00A790]'
-            }else if(priority === 'low'){
-                return 'text-[#428BC1]'
-            }else{
-                return 'text-[#8942C1]'
-            }
+            if (priority === 'very-high') {
+                return 'text-[#ED4C5C]';
+            } else if (priority === 'high') {
+                return 'text-[#F8A541]';
+            } else if (priority === 'normal') { 
+                return 'text-[#00A790]';
+            } else if (priority === 'low') {
+                return 'text-[#428BC1]';
+            } else {
+                return 'text-[#8942C1]';
+            };
         },
-        resetModal(){
-            this.isCreateOrEdit= 'create';
-            this.todo= {
+        resetModal() {
+            this.isCreateOrEdit = 'create';
+            this.todo = {
                 activity_group_id: null,
                 id: null,
                 is_active: null,
                 priority: "",
                 title: "",
             },
-            this.selectedPriority ={value: 'Very High', code:'very-high' };
+            this.selectedPriority = {value: 'Very High', code: 'very-high' };
             this.loading = false;
         }
-
     },
-    mounted(){
-        this.$root.$on('show-modal-todo', todo =>{
+    mounted() {
+        this.$root.$on('show-modal-todo', todo => {
             this.isCreateOrEdit = todo.type;
             this.todo = todo.data;
             if (todo.type === 'edit') {
-                this.selectedPriority = this.listPriority.filter(priority => priority.code === todo.data.priority)[0]
-                console.log()
+                this.selectedPriority = this.listPriority.filter(priority => priority.code === todo.data.priority)[0];
             }
             this.$root.$emit('bv::show::modal', 'modal-todo');
         })
-    }
+    },
 }
 
 </script>
