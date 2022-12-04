@@ -1,9 +1,12 @@
 <template>
   <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
+    <div class="bg-[#16ABF8] flex justify-center mx-auto">
+        <div id="nav" class="w-[1000px] flex items-center">
+          <router-link to="/" >
+            <span class="text-white text-2xl">To Do List App</span>
+          </router-link>
+        </div>
+     </div>
     <router-view />
   </div>
 </template>
@@ -18,12 +21,11 @@
 }
 
 #nav {
-  padding: 30px;
+  height: 105px;
 }
 
 #nav a {
   font-weight: bold;
-  color: #2c3e50;
 }
 
 #nav a.router-link-exact-active {
